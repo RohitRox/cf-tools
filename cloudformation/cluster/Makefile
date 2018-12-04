@@ -6,7 +6,6 @@ ENV_TYPE:=nonproduction
 LOAD_BALANCER_SCHEME:=internal
 
 SUB_SYSTEM:=xxx
-SUB_SYSTEM_ENDPOINT:=xxx.cloudfactory.local
 GIT_USER:=xxx
 GIT_REPO:=xxx
 
@@ -16,9 +15,9 @@ CLUSTER_STACK:=$(ENV_LABEL)-$(STACK_NAME)-cluster
 RESOURCES_STACK:=$(ENV_LABEL)-$(STACK_NAME)-resources
 
 create-cluster:
-	aws cloudformation create-stack --stack-name $(CLUSTER_STACK) --template-body file://Infrastructure/cluster.yaml --profile $(AWS_PROFILE) --region $(AWS_REGION) --capabilities CAPABILITY_IAM --parameters ParameterKey=EnvironmentName,ParameterValue=$(ENV_LABEL) ParameterKey=EnvironmentType,ParameterValue=$(ENV_TYPE) ParameterKey=SubSystem,ParameterValue=$(SUB_SYSTEM) ParameterKey=DomainName,ParameterValue=$(SUB_SYSTEM_ENDPOINT) ParameterKey=LoadBalancerScheme,ParameterValue=$(LOAD_BALANCER_SCHEME)
+	aws cloudformation create-stack --stack-name $(CLUSTER_STACK) --template-body file://Infrastructure/cluster.yaml --profile $(AWS_PROFILE) --region $(AWS_REGION) --capabilities CAPABILITY_IAM --parameters ParameterKey=EnvironmentName,ParameterValue=$(ENV_LABEL) ParameterKey=EnvironmentType,ParameterValue=$(ENV_TYPE) ParameterKey=SubSystem,ParameterValue=$(SUB_SYSTEM) ParameterKey=LoadBalancerScheme,ParameterValue=$(LOAD_BALANCER_SCHEME)
 update-cluster:
-	aws cloudformation update-stack --stack-name $(CLUSTER_STACK) --template-body file://Infrastructure/cluster.yaml --profile $(AWS_PROFILE) --region $(AWS_REGION) --capabilities CAPABILITY_IAM --parameters ParameterKey=EnvironmentName,UsePreviousValue=true ParameterKey=EnvironmentType,UsePreviousValue=true ParameterKey=SubSystem,UsePreviousValue=true ParameterKey=DomainName,UsePreviousValue=true ParameterKey=LoadBalancerScheme,UsePreviousValue=true
+	aws cloudformation update-stack --stack-name $(CLUSTER_STACK) --template-body file://Infrastructure/cluster.yaml --profile $(AWS_PROFILE) --region $(AWS_REGION) --capabilities CAPABILITY_IAM --parameters ParameterKey=EnvironmentName,UsePreviousValue=true ParameterKey=EnvironmentType,UsePreviousValue=true ParameterKey=SubSystem,UsePreviousValue=true ParameterKey=LoadBalancerScheme,UsePreviousValue=true
 describe-cluster:
 	aws cloudformation describe-stacks --stack-name $(CLUSTER_STACK) --profile $(AWS_PROFILE) --region $(AWS_REGION) | jq -r '.Stacks[].Outputs'
 delete-cluster:

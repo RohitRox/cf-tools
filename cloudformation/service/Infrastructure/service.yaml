@@ -157,21 +157,21 @@ Resources:
               awslogs-stream-prefix: !Ref ServiceName
 
   # Create a service discovery service in the private service domain
-  # ServiceDiscovery:
-  #   Type: AWS::ServiceDiscovery::Service
-  #   Properties:
-  #     Name: !Ref ServiceName
-  #     DnsConfig:
-  #       DnsRecords: # [{Type: A, TTL: "10"}]
-  #       - Type: A
-  #         TTL: 10
-  #       - Type: SRV
-  #         TTL: 10
-  #       NamespaceId:
-  #         Fn::ImportValue:
-  #           !Join [':', [!Ref EnvLabel, !Ref SubSystem, 'ServiceDiscoveryNamespace']]
-  #     HealthCheckCustomConfig:
-  #       FailureThreshold: 1
+  ServiceDiscovery:
+    Type: AWS::ServiceDiscovery::Service
+    Properties:
+      Name: !Sub ${ServiceName}-${SubSystem}
+      DnsConfig:
+        DnsRecords: # [{Type: A, TTL: "10"}]
+        - Type: A
+          TTL: 10
+        - Type: SRV
+          TTL: 10
+        NamespaceId:
+          Fn::ImportValue:
+            !Join [':', [!Ref EnvLabel, 'ServiceDiscovery']]
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
 
   # The service. The service is a resource which allows you to run multiple
   # copies of a type of task, and gather up their logs and metrics, as well
@@ -199,9 +199,9 @@ Resources:
             - Fn::ImportValue: !Join [ ':', [ !Ref EnvLabel, 'SubnetAZ1Private' ]]
             - Fn::ImportValue: !Join [ ':', [ !Ref EnvLabel, 'SubnetAZ2Private' ]]
       TaskDefinition: !Ref TaskDefinition
-      # ServiceRegistries:
-      #   - RegistryArn: !GetAtt ServiceDiscovery.Arn
-      #     Port: !Ref AppPort
+      ServiceRegistries:
+        - RegistryArn: !GetAtt ServiceDiscovery.Arn
+          Port: !Ref AppPort
       LoadBalancers:
         - ContainerName: !Ref ServiceName
           ContainerPort: !Ref AppPort

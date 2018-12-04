@@ -37,10 +37,6 @@ Parameters:
     - internet-facing
     - internal
 
-  DomainName:
-    Type: String
-    Description: Local domain name into which services are prepended, for example example.wis.sputnik.local
-
 Conditions:
   LoadBalancerSchemeIsInternal: !Equals [!Ref LoadBalancerScheme, 'internal']
   LoadBalancerHasCertificateArn: !Not [!Equals [!Ref CertificateArn, '']]
@@ -50,14 +46,6 @@ Resources:
     Type: AWS::ECS::Cluster
     Properties:
       ClusterName: !Join [ '-', [ !Ref EnvironmentName, !Ref SubSystem ] ]
-
-  # ServiceDiscoveryNamespace:
-  #   Type: AWS::ServiceDiscovery::PrivateDnsNamespace
-  #   Properties:
-  #     Description: !Sub Service Discovery Namespace for ${AWS::StackName}
-  #     Vpc:
-  #       Fn::ImportValue: !Join [':', [!Ref 'EnvironmentName', 'VPC']]
-  #     Name: !Ref DomainName
 
   LoadBalancerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -226,15 +214,3 @@ Outputs:
     Value: !Ref LoadBalancerSecurityGroup
     Export:
       Name: !Join [ ':', [ !Ref 'EnvironmentName', !Ref SubSystem, 'LoadBalancerSecurityGroup' ] ]
-
-  # ServiceDiscoveryNamespace:
-  #   Description: The ID of the private service discovery domain
-  #   Value: !Ref ServiceDiscoveryNamespace
-  #   Export:
-  #     Name: !Join [ ':', [ !Ref 'EnvironmentName', !Ref SubSystem, 'ServiceDiscoveryNamespace' ] ]
-
-  # ServiceDiscoveryEndpoint:
-  #   Description: Service discovery endpoint
-  #   Value: !Ref DomainName
-  #   Export:
-  #     Name: !Join [ ':', [ !Ref 'EnvironmentName', !Ref SubSystem, 'ServiceDiscoveryEndpoint' ] ]

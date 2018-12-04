@@ -13,7 +13,7 @@ rohit.joshi@cloudfactory.com kaji@cloudfactory.com
 Sub-System
   |
   |- Infrastructure
-  | |- cluster.yaml # ECS cluster, load balancers, service discovery domains
+  | |- cluster.yaml # ECS cluster, load balancers
   | |- resources.yaml # databases, buckets, caches, sns/sqs etc resources shared between the services
   | |- ci.yaml # Conitnuous integration resources
   | |- Makefile
