@@ -32,7 +32,7 @@ run:
 test:
 	# Replace this with service unit/functional tests
 	docker build -t $(SERVICE_NAME) .
-ecr-create:
+ecr:
 	aws ecr create-repository --repository-name $(IMAGE_NAME) --profile $(AWS_PROFILE) --region $(AWS_REGION)
 ecr-delete:
 	aws ecr delete-repository --repository-name $(IMAGE_NAME) --profile $(AWS_PROFILE) --region $(AWS_REGION)

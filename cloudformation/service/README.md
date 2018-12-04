@@ -69,7 +69,11 @@ ENV_LABEL on the otherhand is a personalization label that can be added to creat
   # export ENV_LABEL=alpha
 
   # setup service specific resources
+  # resources template is at first empty, skip this step if you haven't added any resources
   $ make create resources
+
+  # create ECR repository
+  $ make ecr
 
   # push image to ECR
   $ make ecr-push SERVICE_VERSION=0.0.0
