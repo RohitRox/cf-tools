@@ -8,6 +8,8 @@ function cf-tools() {
       case "$1" in
         "help" )
           help ;;
+        "install-tools" )
+          install-tools ;;
         "create-service" )
           create-service "$2" ;;
         "create-cluster" )
@@ -23,6 +25,7 @@ function cf-tools() {
 function usage() {
   cat <<- EOM
     cf-tools help
+    cf-tools install-tools
     cf-tools create-service service-name
     cf-tools create-cluster cluster-name
 EOM
@@ -30,6 +33,11 @@ EOM
 
 function help() {
   cat $CFTOOLS_HOME/README.md
+}
+
+function install-tools() {
+  which -s aws || pip install awscli
+	which -s jq || ( which -s brew && brew install jq || which -s apt-get && apt-get install jq || which -s yum && yum install jq || which -s choco && choco install jq)
 }
 
 function create-service {
