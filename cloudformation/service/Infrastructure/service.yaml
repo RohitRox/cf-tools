@@ -72,6 +72,12 @@ Resources:
       GroupDescription: Access to the Fargate containers from load balancer
       VpcId:
         Fn::ImportValue: !Join [':', [!Ref EnvLabel, 'VPC']]
+      SecurityGroupIngress:
+        CidrIp:
+          Fn::ImportValue: !Join [':', [!Ref EnvLabel, 'CidrBlock']]
+        IpProtocol: tcp
+        FromPort: !Ref AppPort
+        ToPort: !Ref AppPort
 
   ContainerSecurityGroupIngressFromLoadBalancer:
     Type: AWS::EC2::SecurityGroupIngress
