@@ -68,6 +68,8 @@ function create-cluster() {
       if [ ! -d "./$1" ]
         then
           cp -R $CFTOOLS_HOME/cloudformation/cluster ./$1
+          cd ./$1
+          git init
         else
           echo "Cluster with the same name exists in current path."
       fi
