@@ -1,0 +1,131 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: CodeBuild project for continuous integration
+
+# Note: It's necessary to set up the AWS OAuth application to have access to your repositories.
+# To do it, navigate to the AWS CodeBuild console, create a project and select GitHub as source provider. The project does not need to be saved, it is only important to connect to GitHub. It only needs to be done once.
+
+Parameters:
+  GitUser:
+    Type: String
+
+  GitRepo:
+    Type: String
+
+  GitOauthToken:
+    Type: String
+
+  SubSystem:
+    Type: String
+    Description: Subsystem Code (should be all lowercases)
+    AllowedPattern: "^[a-z]+$"
+
+  ServiceName:
+    Type: String
+
+  SourcePath:
+    Type: String
+
+Resources:
+  CodeBuildIAMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: "/"
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - codebuild.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Policies:
+        - PolicyName: !Join ['-', [!Ref 'AWS::StackName', 'DeployCodeBuildRolePolicy']]
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecr:GetAuthorizationToken
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - logs:*
+                Resource:
+                  - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/*
+              - Effect: Allow
+                Action:
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:BatchGetImage
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:PutImage
+                  - ecr:InitiateLayerUpload
+                  - ecr:UploadLayerPart
+                  - ecr:CompleteLayerUpload
+                Resource: !Sub arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/*
+              - Effect: Allow
+                Action:
+                  - ecs:*
+                  - ec2:*
+                  - elasticloadbalancing:*
+                  - application-autoscaling:*
+                  - cloudformation:*
+                  - cloudwatch:*
+                  - servicediscovery:*
+                Resource: "*"
+              - Resource: "*"
+                Effect: Allow
+                Action:
+                - iam:PassRole
+
+  CodeBuildDeploy:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub ${ServiceName}-${SubSystem}-ecs-deploy
+      Description: ECS Deployer
+      ServiceRole: !GetAtt CodeBuildIAMRole.Arn
+      Artifacts:
+        Type: no_artifacts
+      Source:
+        Type: GITHUB
+        Auth:
+          Type: OAUTH
+        Location: !Sub https://github.com/${GitUser}/${GitRepo}.git
+        BuildSpec: |
+          version: 0.2
+          phases:
+            pre_build:
+              commands:
+                - COMMIT="$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)"
+                - WORKDIR=$(pwd)
+                - cd $SOURCE_PATH
+                - echo "Current Git commit is ${COMMIT} at ${CODEBUILD_SOURCE_REPO_URL}"
+                - if [ -z "$ENV_LABEL"]; then echo "No Environment label specified"; exit 1; fi
+                - git remote remove origin
+                - git remote add origin $GIT_REMOTE
+                - git fetch --tags
+                - SERVICE_VERSION=$(make -s version)
+                - HAS_PAST_TAG=$(git tag | grep $SERVICE_VERSION | true)
+                - if [ ! -z "$HAS_PAST_TAG"]; then echo "$SERVICE_VERSION has already been released."; exit 1; fi
+            build:
+              commands:
+                - echo "Starting deployment for ${SERVICE_NAME} at ${COMMIT} in ${ENV_LABEL} environment..."
+                - make build
+                - make test
+                - make ecr-push
+                - make update-service
+                - GIT_TAG="v${SERVICE_VERSION}"
+                - git tag $GIT_TAG $COMMIT
+                - git push origin $GIT_TAG
+      Triggers:
+        Webhook: false
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/docker:17.09.0
+        EnvironmentVariables:
+        - Name: SOURCE_PATH
+          Value: !Ref SourcePath
+        - Name: SERVICE_NAME
+          Value: !Ref ServiceName
+        - Name: GIT_REMOTE
+          Value: !Sub https://${GitUser}:${GitOauthToken}@github.com/${GitUser}/${GitRepo}.git

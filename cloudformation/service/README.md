@@ -24,6 +24,7 @@ Sub-System
   | | |
   | | |- resources.yaml # ECR repos, service specific resources
   | | |- service.yaml # Services defn
+  | | |- deployment.yaml # Service deployment CodeBuild project
   | |
   | |- Makefile
   |
