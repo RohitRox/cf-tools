@@ -7,24 +7,28 @@ function cf-tools() {
     then
       case "$1" in
         "help" )
-          help ;;
+          cf-tools-help ;;
         "install-tools" )
           install-tools ;;
         "config" )
-          config-ok && config ;;
+          config-ok && cf-tools-config ;;
         "create-service" )
           config-ok && create-service "$2" ;;
         "create-cluster" )
           config-ok && create-cluster "$2" ;;
+        * )
+          echo "Command not recognized."
+          echo "Usage:"
+          cf-tools-usage ;;
       esac
     else
       echo "Command not recognized."
       echo "Usage:"
-      usage
+      cf-tools-usage
   fi
 }
 
-function usage() {
+function cf-tools-usage() {
   cat <<- EOM
     cf-tools help
     cf-tools install-tools
@@ -33,7 +37,7 @@ function usage() {
 EOM
 }
 
-function help() {
+function cf-tools-help() {
   cat $CFTOOLS_HOME/README.md
 }
 
@@ -42,7 +46,7 @@ function install-tools() {
 	which -s jq || ( which -s brew && brew install jq || which -s apt-get && apt-get install jq || which -s yum && yum install jq || which -s choco && choco install jq)
 }
 
-function config() {
+function cf-tools-config() {
   echoInfo "AWS_PROFILE: ${AWS_PROFILE}"
   echoInfo "AWS_REGION: ${AWS_REGION}"
   echoInfo "ENV_LABEL: ${ENV_LABEL}"
@@ -78,7 +82,6 @@ function create-cluster() {
   fi
 }
 
-# Non-exposed
 function config-ok() {
   if [[ -z "$AWS_PROFILE" || -z "$AWS_REGION"] || -z "$ENV_LABEL" ]]
     then
@@ -104,3 +107,5 @@ NC='\033[0m'
 function echoInfo() {
   printf "${Cyan}$1${NC}\n"
 }
+
+
