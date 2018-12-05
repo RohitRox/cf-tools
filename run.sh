@@ -86,7 +86,7 @@ function config-ok() {
   if [[ -z "$AWS_PROFILE" || -z "$AWS_REGION"] || -z "$ENV_LABEL" ]]
     then
       echo "One of the required env variables are not set."
-      config
+      cf-tools-config
       return 1
     else
       return 0
