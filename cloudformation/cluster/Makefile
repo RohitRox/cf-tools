@@ -6,8 +6,8 @@ ENV_TYPE:=nonproduction
 LOAD_BALANCER_SCHEME:=internal
 
 SUB_SYSTEM:=xxx
-GIT_USER:=xxx
-GIT_REPO:=xxx
+
+GIT_REPO_URL:=https://github.com/cloudfactory/xxx.git
 
 STACK_NAME:=$(SUB_SYSTEM)-subsystem
 
@@ -33,7 +33,7 @@ delete-resources:
 	aws cloudformation delete-stack --stack-name $(RESOURCES_STACK) --profile $(AWS_PROFILE) --region $(AWS_REGION)
 
 create-ci:
-	aws cloudformation create-stack --stack-name $(STACK_NAME)-ci --template-body file://Infrastructure/ci.yaml --profile $(AWS_PROFILE) --region $(AWS_REGION) --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=SubSystem,ParameterValue=$(SUB_SYSTEM) ParameterKey=GitUser,ParameterValue=$(GIT_USER) ParameterKey=GitRepo,ParameterValue=$(GIT_REPO)
+	aws cloudformation create-stack --stack-name $(STACK_NAME)-ci-dum --template-body file://Infrastructure/ci.yaml --profile $(AWS_PROFILE) --region $(AWS_REGION) --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=SubSystem,ParameterValue=$(SUB_SYSTEM) ParameterKey=GitRepoUrl,ParameterValue=$(GIT_REPO_URL)
 
 test:
 	echo "Command to test whole sub system. Not implemented yet."

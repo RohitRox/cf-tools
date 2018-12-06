@@ -5,10 +5,7 @@ Description: CodeBuild project for continuous integration
 # To do it, navigate to the AWS CodeBuild console, create a project and select GitHub as source provider. The project does not need to be saved, it is only important to connect to GitHub. It only needs to be done once.
 
 Parameters:
-  GitUser:
-    Type: String
-
-  GitRepo:
+  GitRepoUrl:
     Type: String
 
   SubSystem:
@@ -52,25 +49,10 @@ Resources:
         Type: GITHUB
         Auth:
           Type: OAUTH
-        Location: !Sub https://github.com/${GitUser}/${GitRepo}.git
-        BuildSpec: |
-          version: 0.2
-          phases:
-            pre_build:
-              commands:
-                - ls
-                - echo "CODEBUILD_RESOLVED_SOURCE_VERSION is ${CODEBUILD_RESOLVED_SOURCE_VERSION}"
-                - COMMIT="$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)"
-                - WORKDIR=$(pwd)
-                - echo "Current Git commit is ${COMMIT}"
-                - echo "Trigger event is ${CODEBUILD_WEBHOOK_TRIGGER}"
-            build:
-              commands:
-                - echo "Starting test ..."
-                - make test
-                - echo "Test Complete for subsystem at ${COMMIT}"
+        Location: !Ref GitRepoUrl
+        BuildSpec: Infrastructure/buildspec.yaml
       Triggers:
-        Webhook: true
+        Webhook: false
       Environment:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
