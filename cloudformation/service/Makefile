@@ -13,16 +13,13 @@ ENV_TYPE:=nonproduction
 SUB_SYSTEM:=xxx
 SERVICE_NAME:=xxx
 APP_PORT:=3000
-HEALTH_CHECK_PATH:=/service-status
-URL_PATTERN:=/xxx
+HEALTH_CHECK_PATH:=/xxx/service-status
+URL_PATTERN:=/xxx*
 PRIORITY:=10
 DESIRED_COUNT:=2
+SOURCE_PATH:=xxx
 
-# Source and Git
-GIT_USER:=xxx
-GIT_REPO:=xxx
-GIT_BRANCH:=master
-SOURCE_PATH:=./
+GIT_REPO:=cloudfactory/xxx
 
 # Latest service version, follow Semantic Versioning, always update this on release/deploy
 SERVICE_VERSION=0.0.0
@@ -50,19 +47,34 @@ ecr-push:
 	docker push $(ECR_ADDR):$(SERVICE_VERSION)
 
 create-resources:
-	aws cloudformation create-stack --stack-name $(STACK_NAME)-resources --template-body file://Infrastructure/resources.yaml $(MAKE_ARGS) --parameters ParameterKey=EnvLabel,ParameterValue=$(ENV_LABEL) ParameterKey=EnvType,ParameterValue=$(ENV_TYPE) ParameterKey=SubSystem,ParameterValue=$(SUB_SYSTEM) ParameterKey=ServiceName,ParameterValue=$(SERVICE_NAME)
+	aws cloudformation create-stack --stack-name $(STACK_NAME)-resources --template-body file://Infrastructure/resources.yaml $(MAKE_ARGS) --parameters $(RESOURCE_ARGS)
 update-resources:
-	aws cloudformation update-stack --stack-name $(STACK_NAME)-resources --template-body file://Infrastructure/resources.yaml $(MAKE_ARGS) --parameters ParameterKey=EnvLabel,UsePreviousValue=true ParameterKey=EnvType,UsePreviousValue=true ParameterKey=SubSystem,UsePreviousValue=true ParameterKey=ServiceName,UsePreviousValue=true
+	aws cloudformation update-stack --stack-name $(STACK_NAME)-resources --template-body file://Infrastructure/resources.yaml $(MAKE_ARGS) --parameters $(RESOURCE_ARGS)
 
 create-service:
-	aws cloudformation create-stack --stack-name $(STACK_NAME) --template-body file://Infrastructure/service.yaml $(MAKE_ARGS) --capabilities CAPABILITY_IAM --parameters ParameterKey=EnvLabel,ParameterValue=$(ENV_LABEL) ParameterKey=EnvType,ParameterValue=$(ENV_TYPE) ParameterKey=SubSystem,ParameterValue=$(SUB_SYSTEM) ParameterKey=ServiceName,ParameterValue=$(SERVICE_NAME) ParameterKey=ServiceVersion,ParameterValue=$(SERVICE_VERSION) ParameterKey=DockerRepoUrl,ParameterValue=$(ECR_ADDR) ParameterKey=AppPort,ParameterValue=$(APP_PORT) ParameterKey=UrlPattern,ParameterValue=$(URL_PATTERN) ParameterKey=Priority,ParameterValue=$(PRIORITY) ParameterKey=DesiredCount,ParameterValue=$(DESIRED_COUNT) ParameterKey=HealthCheckPath,ParameterValue=$(HEALTH_CHECK_PATH)
+	aws cloudformation create-stack --stack-name $(STACK_NAME) --template-body file://Infrastructure/service.yaml $(MAKE_ARGS) --capabilities CAPABILITY_IAM --parameters $(SERVICE_ARGS)
 update-service:
-	aws cloudformation update-stack --stack-name $(STACK_NAME) --template-body file://Infrastructure/service.yaml $(MAKE_ARGS) --capabilities CAPABILITY_IAM --parameters ParameterKey=EnvLabel,UsePreviousValue=true ParameterKey=EnvType,UsePreviousValue=true ParameterKey=SubSystem,UsePreviousValue=true ParameterKey=ServiceName,UsePreviousValue=true ParameterKey=ServiceVersion,ParameterValue=$(SERVICE_VERSION) ParameterKey=DockerRepoUrl,ParameterValue=$(ECR_ADDR) ParameterKey=AppPort,ParameterValue=$(APP_PORT) ParameterKey=UrlPattern,ParameterValue=$(URL_PATTERN) ParameterKey=Priority,ParameterValue=$(PRIORITY) ParameterKey=DesiredCount,ParameterValue=$(DESIRED_COUNT) ParameterKey=HealthCheckPath,ParameterValue=$(HEALTH_CHECK_PATH)
+	aws cloudformation update-stack --stack-name $(STACK_NAME) --template-body file://Infrastructure/service.yaml $(MAKE_ARGS) --capabilities CAPABILITY_IAM --parameters $(SERVICE_ARGS)
+deploy-service:
+	aws cloudformation deploy --stack-name $(STACK_NAME) --parameter-overrides ServiceVersion=$(SERVICE_VERSION) --template-file Infrastructure/service.yaml --capabilities CAPABILITY_IAM $(MAKE_ARGS)
 
-create-deployment:
-	aws cloudformation create-stack --stack-name $(STACK_NAME)-deployment --template-body file://Infrastructure/deployment.yaml $(MAKE_ARGS) --capabilities CAPABILITY_IAM --parameters ParameterKey=ServiceName,ParameterValue=$(SERVICE_NAME) ParameterKey=SubSystem,ParameterValue=$(SUB_SYSTEM) ParameterKey=GitRepo,ParameterValue=$(GIT_REPO) ParameterKey=GitUser,ParameterValue=$(GIT_USER) ParameterKey=GitOauthToken,ParameterValue=$(GIT_OAUTH_TOKEN) ParameterKey=SourcePath,ParameterValue=$(SOURCE_PATH)
-update-deployment:
-	aws cloudformation update-stack --stack-name $(STACK_NAME)-deployment --template-body file://Infrastructure/deployment.yaml $(MAKE_ARGS) --capabilities CAPABILITY_IAM --parameters ParameterKey=ServiceName,UsePreviousValue=true ParameterKey=SubSystem,UsePreviousValue=true ParameterKey=GitRepo,UsePreviousValue=true ParameterKey=GitUser,UsePreviousValue=true ParameterKey=GitOauthToken,UsePreviousValue=true ParameterKey=SourcePath,ParameterValue=$(SOURCE_PATH)
+create-deployment-stack:
+	aws cloudformation create-stack --stack-name $(STACK_NAME)-deployment --template-body file://Infrastructure/deployment.yaml $(MAKE_ARGS) --capabilities CAPABILITY_IAM --parameters $(DEPLOYMENT_ARGS)
+update-deployment-stack:
+	aws cloudformation update-stack --stack-name $(STACK_NAME)-deployment --template-body file://Infrastructure/deployment.yaml $(MAKE_ARGS) --capabilities CAPABILITY_IAM --parameters $(DEPLOYMENT_ARGS)
+
+create-release-stack:
+	aws cloudformation create-stack --stack-name $(IMAGE_NAME)-release --template-body file://Infrastructure/release.yaml $(MAKE_ARGS) --capabilities CAPABILITY_IAM --parameters $(RELEASE_ARGS)
+update-release-stack:
+	aws cloudformation update-stack --stack-name $(IMAGE_NAME)-release --template-body file://Infrastructure/release.yaml $(MAKE_ARGS) --capabilities CAPABILITY_IAM --parameters $(RELEASE_ARGS)
 
 version:
 	echo $(SERVICE_VERSION)
+
+RESOURCE_ARGS=ParameterKey=EnvLabel,ParameterValue=$(ENV_LABEL) ParameterKey=EnvType,ParameterValue=$(ENV_TYPE) ParameterKey=SubSystem,ParameterValue=$(SUB_SYSTEM) ParameterKey=ServiceName,ParameterValue=$(SERVICE_NAME)
+
+SERVICE_ARGS=ParameterKey=EnvLabel,ParameterValue=$(ENV_LABEL) ParameterKey=EnvType,ParameterValue=$(ENV_TYPE) ParameterKey=SubSystem,ParameterValue=$(SUB_SYSTEM) ParameterKey=ServiceName,ParameterValue=$(SERVICE_NAME) ParameterKey=ServiceVersion,ParameterValue=$(SERVICE_VERSION) ParameterKey=DockerRepoUrl,ParameterValue=$(ECR_ADDR) ParameterKey=AppPort,ParameterValue=$(APP_PORT) ParameterKey=UrlPattern,ParameterValue=$(URL_PATTERN) ParameterKey=Priority,ParameterValue=$(PRIORITY) ParameterKey=DesiredCount,ParameterValue=$(DESIRED_COUNT) ParameterKey=HealthCheckPath,ParameterValue=$(HEALTH_CHECK_PATH)
+
+DEPLOYMENT_ARGS=ParameterKey=EnvLabel,ParameterValue=$(ENV_LABEL) ParameterKey=ServiceName,ParameterValue=$(SERVICE_NAME) ParameterKey=SubSystem,ParameterValue=$(SUB_SYSTEM) ParameterKey=GitRepo,ParameterValue=$(GIT_REPO) ParameterKey=SourcePath,ParameterValue=$(SOURCE_PATH)
+
+RELEASE_ARGS=ParameterKey=ServiceName,ParameterValue=$(SERVICE_NAME) ParameterKey=SubSystem,ParameterValue=$(SUB_SYSTEM) ParameterKey=GitRepo,ParameterValue=$(GIT_REPO) ParameterKey=SourcePath,ParameterValue=$(SOURCE_PATH)
