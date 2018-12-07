@@ -34,8 +34,8 @@ function cf-tools-usage() {
   cat <<- EOM
     cf-tools help
     cf-tools install-tools
-    cf-tools create-service service-name
     cf-tools create-cluster cluster-name
+    cf-tools create-service service-name
 EOM
 }
 
