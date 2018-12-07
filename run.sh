@@ -9,13 +9,15 @@ function cf-tools() {
         "help" )
           cf-tools-help ;;
         "install-tools" )
-          install-tools ;;
+          cf-tools-install ;;
         "config" )
           config-ok && cf-tools-config ;;
         "create-service" )
           config-ok && create-service "$2" ;;
         "create-cluster" )
           config-ok && create-cluster "$2" ;;
+        "usage" )
+          cf-tools-usage ;;
         * )
           echo "Command not recognized."
           echo "Usage:"
@@ -41,7 +43,7 @@ function cf-tools-help() {
   cat $CFTOOLS_HOME/README.md
 }
 
-function install-tools() {
+function cf-tools-install() {
   which -s aws || pip install awscli
 	which -s jq || ( which -s brew && brew install jq || which -s apt-get && apt-get install jq || which -s yum && yum install jq || which -s choco && choco install jq)
 }
