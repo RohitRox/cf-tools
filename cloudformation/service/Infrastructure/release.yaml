@@ -117,7 +117,7 @@ Resources:
             build:
               commands:
                 - echo "Starting release for ${SERVICE_NAME} at ${COMMIT} for v${SERVICE_VERSION}"
-                - make build
+                - make -s build
                 - make test
                 - make ecr-push
                 - GIT_TAG="v${SERVICE_VERSION}"
