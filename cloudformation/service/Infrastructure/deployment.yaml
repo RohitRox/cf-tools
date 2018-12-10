@@ -68,7 +68,6 @@ Resources:
                   - cloudformation:*
                   - cloudwatch:*
                   - servicediscovery:*
-                  - ssm:*
                 Resource: "*"
               - Resource: "*"
                 Effect: Allow
@@ -87,7 +86,7 @@ Resources:
         Type: GITHUB
         Auth:
           Type: OAUTH
-        Location: !Sub https://github.com/${GIT_REPO}.git
+        Location: !Sub https://github.com/${GitRepo}.git
         BuildSpec: |
           version: 0.2
           phases:
