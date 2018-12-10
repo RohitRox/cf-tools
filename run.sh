@@ -16,6 +16,8 @@ function cf-tools() {
           config-ok && create-service "$2" ;;
         "create-cluster" )
           config-ok && create-cluster "$2" ;;
+        "load-env" )
+          export $(cat $CFTOOLS_HOME/.env | xargs) ;;
         "usage" )
           cf-tools-usage ;;
         * )
