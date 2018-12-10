@@ -29,7 +29,7 @@ IMAGE_NAME:=$(SUB_SYSTEM)-$(SERVICE_NAME)
 ECR_ADDR:=$(ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com/$(IMAGE_NAME)
 
 build:
-	docker build -t $(SERVICE_NAME) .
+	docker build --build-arg GIT_USER=$(GIT_USER) --build-arg GIT_OUTH_TOKEN=$(GIT_OUTH_TOKEN) -t $(SERVICE_NAME) .
 run:
 	docker run -it -p $(APP_PORT):$(APP_PORT) $(SERVICE_NAME):latest
 test:

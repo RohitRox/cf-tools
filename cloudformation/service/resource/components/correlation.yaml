@@ -1,0 +1,6 @@
+packages:
+  - github.com/cloudfactory/service-core/correlation
+
+components:
+  correlationIdContextBuilder:
+    type: correlation.CorrelationIdContextBuilder

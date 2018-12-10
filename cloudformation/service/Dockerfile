@@ -7,6 +7,9 @@ ENV GOPATH=/go
 ENV GRANITIC_HOME=$GOPATH/src/github.com/graniticio/granitic
 ENV WORKSPACE=$GOPATH/src/service
 
+ARG GIT_USER
+ARG GIT_OUTH_TOKEN
+
 WORKDIR $WORKSPACE
 
 ADD ./install-packages.sh .
