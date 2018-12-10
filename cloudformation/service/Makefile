@@ -34,7 +34,7 @@ run:
 	docker run -it -p $(APP_PORT):$(APP_PORT) $(SERVICE_NAME):latest
 test:
 	# Replace this with service unit/functional tests
-	docker build -t $(SERVICE_NAME) .
+	echo "Not implemented yet."
 
 ecr:
 	aws ecr create-repository --repository-name $(IMAGE_NAME) $(MAKE_ARGS)
