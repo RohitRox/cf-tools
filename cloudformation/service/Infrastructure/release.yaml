@@ -101,13 +101,13 @@ Resources:
             variables:
               GIT_USER: cfautomator
             parameter-store:
-              GIT_TOKEN: /oauth_tokens/github/cfautomator
+              GIT_OAUTH_TOKEN: /oauth_tokens/github/cfautomator
           phases:
             pre_build:
               commands:
                 - COMMIT="$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)"
                 - WORKDIR=$(pwd)
-                - GIT_REMOTE=https://${GIT_USER}:${GIT_TOKEN}@github.com/${GIT_REPO}.git
+                - GIT_REMOTE=https://${GIT_USER}:${GIT_OAUTH_TOKEN}@github.com/${GIT_REPO}.git
                 - git remote remove origin
                 - git remote add origin $GIT_REMOTE
                 - cd $SOURCE_PATH
