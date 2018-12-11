@@ -57,7 +57,7 @@ function cf-tools-config() {
   echoInfo "AWS_PROFILE: ${AWS_PROFILE}"
   echoInfo "AWS_REGION: ${AWS_REGION}"
   echoInfo "GIT_USER: ${GIT_USER}"
-  [[ -z "$GIT_TOKEN" ]] && echoInfo "GIT_TOKEN: " || echoInfo "GIT_TOKEN: xxxxxxxx"
+  [[ -z "$GIT_OUTH_TOKEN" ]] && echoInfo "GIT_OUTH_TOKEN: " || echoInfo "GIT_OUTH_TOKEN: xxxxxxxx"
   echoInfo "ENV_LABEL: ${ENV_LABEL}"
 }
 
