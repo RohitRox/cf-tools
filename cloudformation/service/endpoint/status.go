@@ -13,6 +13,6 @@ type StatusLogic struct{
 }
 
 func (sl *StatusLogic) Process(ctx context.Context, req *ws.WsRequest, res *ws.WsResponse) {
-	sl.Log.LogInfof("Serving request from Hello Service Boilterplate")
+	sl.Log.LogInfof("Serving request from %s", sl.ServiceName)
 	res.Body = fmt.Sprintf("All good from %s", sl.ServiceName)
 }
