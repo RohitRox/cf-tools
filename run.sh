@@ -35,6 +35,8 @@ function cf-tools() {
 function cf-tools-usage() {
   cat <<- EOM
     cf-tools help
+    cf-tools config
+    cf-tools load-env
     cf-tools install-tools
     cf-tools create-cluster cluster-name
     cf-tools create-service service-name
@@ -51,8 +53,11 @@ function cf-tools-install() {
 }
 
 function cf-tools-config() {
+  echo "Current cf-tools environment:"
   echoInfo "AWS_PROFILE: ${AWS_PROFILE}"
   echoInfo "AWS_REGION: ${AWS_REGION}"
+  echoInfo "GIT_USER: ${GIT_USER}"
+  [[ -z "$GIT_TOKEN" ]] && echoInfo "GIT_TOKEN: " || echoInfo "GIT_TOKEN: xxxxxxxx"
   echoInfo "ENV_LABEL: ${ENV_LABEL}"
 }
 
