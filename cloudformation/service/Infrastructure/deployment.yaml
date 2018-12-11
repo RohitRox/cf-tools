@@ -73,6 +73,10 @@ Resources:
                 Effect: Allow
                 Action:
                 - iam:PassRole
+              - Effect: Allow
+                Action: ssm:GetParameters
+                Resource:
+                - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/oauth_tokens/github/cfautomator
 
   CodeBuildDeploy:
     Type: AWS::CodeBuild::Project
@@ -89,6 +93,11 @@ Resources:
         Location: !Sub https://github.com/${GitRepo}.git
         BuildSpec: |
           version: 0.2
+          env:
+            variables:
+              GIT_USER: cfautomator
+            parameter-store:
+              GIT_OUTH_TOKEN: /oauth_tokens/github/cfautomator
           phases:
             pre_build:
               commands:
