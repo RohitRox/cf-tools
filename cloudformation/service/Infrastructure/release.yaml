@@ -85,7 +85,7 @@ Resources:
   CodeBuildRelease:
     Type: AWS::CodeBuild::Project
     Properties:
-      Name: !Sub ${ServiceName}-${SubSystem}-ecs-release
+      Name: !Ref AWS::StackName
       Description: Git version release
       ServiceRole: !GetAtt CodeBuildIAMRole.Arn
       Artifacts:
@@ -112,7 +112,7 @@ Resources:
                 - git remote add origin $GIT_REMOTE
                 - cd $SOURCE_PATH
                 - SERVICE_VERSION=$(make -s version)
-                - HAS_TAG=`git ls-remote origin refs/tags/v$SERVICE_VERSION`
+                - HAS_TAG=`git ls-remote origin refs/tags/${SERVICE_NAME}-$SERVICE_VERSION`
                 - if [ ! -z "$HAS_TAG" ]; then echo "$SERVICE_VERSION has already been released." && exit 1; fi
             build:
               commands:
@@ -120,7 +120,7 @@ Resources:
                 - make -s build
                 - make test
                 - make ecr-push
-                - GIT_TAG="v${SERVICE_VERSION}"
+                - GIT_TAG="${SERVICE_NAME}-${SERVICE_VERSION}"
                 - git tag $GIT_TAG $COMMIT
                 - git push origin $GIT_TAG
       Triggers:
