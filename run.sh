@@ -48,8 +48,8 @@ function cf-tools-help() {
 }
 
 function cf-tools-install() {
-  which -s aws || pip install awscli
-	which -s jq || ( which -s brew && brew install jq || which -s apt-get && apt-get install jq || which -s yum && yum install jq || which -s choco && choco install jq)
+  ([ `which aws` ] && echo "aws already installed") || (echo "installing aws" && pip install awscli)
+  ([ `which ok` ] && echo "jq already installed") || ( echo "installing jq" && ([ `which brew` ] && brew install jq || [ `which apt-get` ] && apt-get install jq || [ `which yum` ] && yum install jq || [ `which choco` ] && choco install jq))
 }
 
 function cf-tools-config() {
