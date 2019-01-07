@@ -15,18 +15,18 @@ CLUSTER_STACK:=$(ENV_LABEL)-$(STACK_NAME)-cluster
 RESOURCES_STACK:=$(ENV_LABEL)-$(STACK_NAME)-resources
 
 create-cluster:
-	aws cloudformation create-stack --stack-name $(CLUSTER_STACK) --template-body file://Infrastructure/cluster.yaml --profile $(AWS_PROFILE) --region $(AWS_REGION) --capabilities CAPABILITY_IAM --parameters ParameterKey=EnvironmentName,ParameterValue=$(ENV_LABEL) ParameterKey=EnvironmentType,ParameterValue=$(ENV_TYPE) ParameterKey=SubSystem,ParameterValue=$(SUB_SYSTEM) ParameterKey=LoadBalancerScheme,ParameterValue=$(LOAD_BALANCER_SCHEME)
+	aws cloudformation create-stack --stack-name $(CLUSTER_STACK) --template-body file://Infrastructure/cluster.yaml --profile $(AWS_PROFILE) --region $(AWS_REGION) --capabilities CAPABILITY_IAM --parameters ParameterKey=EnvLabel,ParameterValue=$(ENV_LABEL) ParameterKey=EnvType,ParameterValue=$(ENV_TYPE) ParameterKey=SubSystem,ParameterValue=$(SUB_SYSTEM) ParameterKey=LoadBalancerScheme,ParameterValue=$(LOAD_BALANCER_SCHEME)
 update-cluster:
-	aws cloudformation update-stack --stack-name $(CLUSTER_STACK) --template-body file://Infrastructure/cluster.yaml --profile $(AWS_PROFILE) --region $(AWS_REGION) --capabilities CAPABILITY_IAM --parameters ParameterKey=EnvironmentName,UsePreviousValue=true ParameterKey=EnvironmentType,UsePreviousValue=true ParameterKey=SubSystem,UsePreviousValue=true ParameterKey=LoadBalancerScheme,UsePreviousValue=true
+	aws cloudformation update-stack --stack-name $(CLUSTER_STACK) --template-body file://Infrastructure/cluster.yaml --profile $(AWS_PROFILE) --region $(AWS_REGION) --capabilities CAPABILITY_IAM --parameters ParameterKey=EnvLabel,UsePreviousValue=true ParameterKey=EnvType,UsePreviousValue=true ParameterKey=SubSystem,UsePreviousValue=true ParameterKey=LoadBalancerScheme,UsePreviousValue=true
 describe-cluster:
 	aws cloudformation describe-stacks --stack-name $(CLUSTER_STACK) --profile $(AWS_PROFILE) --region $(AWS_REGION) | jq -r '.Stacks[].Outputs'
 delete-cluster:
 	aws cloudformation delete-stack --stack-name $(CLUSTER_STACK) --profile $(AWS_PROFILE) --region $(AWS_REGION)
 
 create-resources:
-	aws cloudformation create-stack --stack-name $(RESOURCES_STACK) --template-body file://Infrastructure/resources.yaml --profile $(AWS_PROFILE) --region $(AWS_REGION) --parameters ParameterKey=EnvironmentName,ParameterValue=$(ENV_LABEL) ParameterKey=EnvironmentType,ParameterValue=$(ENV_TYPE) ParameterKey=SubSystem,ParameterValue=$(SUB_SYSTEM)
+	aws cloudformation create-stack --stack-name $(RESOURCES_STACK) --template-body file://Infrastructure/resources.yaml --profile $(AWS_PROFILE) --region $(AWS_REGION) --parameters ParameterKey=EnvLabel,ParameterValue=$(ENV_LABEL) ParameterKey=EnvType,ParameterValue=$(ENV_TYPE) ParameterKey=SubSystem,ParameterValue=$(SUB_SYSTEM)
 update-resources:
-	aws cloudformation update-stack --stack-name $(RESOURCES_STACK) --template-body file://Infrastructure/resources.yaml --profile $(AWS_PROFILE) --region $(AWS_REGION) --parameters ParameterKey=EnvironmentName,UsePreviousValue=true ParameterKey=EnvironmentType,UsePreviousValue=true ParameterKey=SubSystem,UsePreviousValue=true
+	aws cloudformation update-stack --stack-name $(RESOURCES_STACK) --template-body file://Infrastructure/resources.yaml --profile $(AWS_PROFILE) --region $(AWS_REGION) --parameters ParameterKey=EnvLabel,UsePreviousValue=true ParameterKey=EnvType,UsePreviousValue=true ParameterKey=SubSystem,UsePreviousValue=true
 describe-resources:
 	aws cloudformation describe-stacks --stack-name $(RESOURCES_STACK) --profile $(AWS_PROFILE) --region $(AWS_REGION) | jq -r '.Stacks[].Outputs'
 delete-resources:

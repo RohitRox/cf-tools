@@ -10,28 +10,29 @@ ACCOUNT_ID:=$(shell aws sts get-caller-identity $(MAKE_ARGS) --output text --que
 
 # Service stack parameters
 ENV_TYPE:=nonproduction
-SUB_SYSTEM:=xxx
-SERVICE_NAME:=xxx
+SUB_SYSTEM:=wis
+SERVICE_NAME:=worker-management-service
 APP_PORT:=3000
-HEALTH_CHECK_PATH:=/xxx/service-status
-URL_PATTERN:=/xxx*
+HEALTH_CHECK_PATH:=/worker/service-status
+URL_PATTERN:=/worker*
 PRIORITY:=10
 DESIRED_COUNT:=2
-SOURCE_PATH:=xxx
 
-GIT_REPO:=cloudfactory/xxx
+SOURCE_PATH:=worker-management-service
+
+GIT_REPO:=cloudfactory/worker-information-subsystem
 
 # Latest service version, follow Semantic Versioning, always update this on release/deploy
-SERVICE_VERSION=0.0.0
+SERVICE_VERSION=$(shell cat .version)
 
 STACK_NAME:=$(ENV_LABEL)-$(SUB_SYSTEM)-$(SERVICE_NAME)
 IMAGE_NAME:=$(SUB_SYSTEM)-$(SERVICE_NAME)
 ECR_ADDR:=$(ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com/$(IMAGE_NAME)
 
 build:
-	docker build --build-arg GIT_USER=$(GIT_USER) --build-arg GIT_OUTH_TOKEN=$(GIT_OUTH_TOKEN) -t $(SERVICE_NAME) .
+	docker build --build-arg GIT_USER=$(GIT_USER) --build-arg GIT_OAUTH_TOKEN=$(GIT_OAUTH_TOKEN) -t $(SERVICE_NAME) .
 run:
-	docker run -it -p $(APP_PORT):$(APP_PORT) $(SERVICE_NAME):latest
+	docker run -it -p $(APP_PORT):$(APP_PORT) -e SERVICE_VERSION=$(SERVICE_VERSION) $(SERVICE_NAME):latest
 test:
 	# Replace this with service unit/functional tests
 	echo "Not implemented yet."

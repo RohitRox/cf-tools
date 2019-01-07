@@ -46,9 +46,11 @@ Resources:
                 Resource: "*"
               - Effect: Allow
                 Action:
-                  - logs:*
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                  - 'logs:CreateLogGroup'
                 Resource:
-                  - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/*
+                  - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/${AWS::StackName}:*
               - Effect: Allow
                 Action:
                   - ecr:GetDownloadUrlForLayer
@@ -61,18 +63,54 @@ Resources:
                 Resource: !Sub arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/*
               - Effect: Allow
                 Action:
-                  - ecs:*
-                  - ec2:*
-                  - elasticloadbalancing:*
-                  - application-autoscaling:*
-                  - cloudformation:*
+                  - ecs:DescribeServices
+                  - ecs:DescribeTaskDefinition
+                  - ecs:DescribeTasks
+                  - ecs:ListTasks
+                  - ecs:RegisterTaskDefinition
+                  - ecs:DeregisterTaskDefinition
+                  - ecs:UpdateService
+                  - elasticloadbalancing:RegisterTargets
+                  - elasticloadbalancing:DeregisterTargets
+                  - cloudformation:DescribeStacks
+                  - cloudformation:UpdateStack
+                  - cloudformation:CreateStack
+                  - cloudformation:GetTemplateSummary
+                  - cloudformation:DescribeChangeSet
+                  - cloudformation:CreateChangeSet
+                  - cloudformation:DeleteChangeSet
+                  - cloudformation:ExecuteChangeSet
+                  - ec2:AttachNetworkInterface
+                  - ec2:DetachNetworkInterface
+                  - ec2:DescribeSecurityGroups
+                  - ec2:AuthorizeSecurityGroupIngress
+                  - application-autoscaling:RegisterScalableTarget
+                  - application-autoscaling:DescribeScalableTargets
+                  - application-autoscaling:DeregisterScalableTarget
+                  - application-autoscaling:PutScalingPolicy
+                  - application-autoscaling:DescribeScalingPolicies
+                  - application-autoscaling:DescribeScalingActivities
+                  - application-autoscaling:DeleteScalingPolicy
+                Resource: "*"
+              - Effect: Allow
+                Resource: "*"
+                Action:
                   - cloudwatch:*
                   - servicediscovery:*
-                Resource: "*"
               - Resource: "*"
                 Effect: Allow
                 Action:
-                - iam:PassRole
+                - iam:GetRole
+                - iam:CreateRole
+                - iam:DeleteRole
+                - iam:AttachRolePolicy
+                - iam:DetachRolePolicy
+                - iam:DeleteRolePolicy
+                - iam:PutRolePolicy
+              - Effect: Allow
+                Resource: '*'
+                Action:
+                - 'iam:PassRole'
               - Effect: Allow
                 Action: ssm:GetParameters
                 Resource:
@@ -97,7 +135,7 @@ Resources:
             variables:
               GIT_USER: cfautomator
             parameter-store:
-              GIT_OUTH_TOKEN: /oauth_tokens/github/cfautomator
+              GIT_OAUTH_TOKEN: /oauth_tokens/github/cfautomator
           phases:
             pre_build:
               commands:
@@ -111,7 +149,7 @@ Resources:
                     echo "Deploying ${DEPLOY_SERVICE_VERSION}..."
                     make deploy-service SERVICE_VERSION=$DEPLOY_SERVICE_VERSION
                   else
-                    COMMIT="$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 7)"
+                    COMMIT=`git rev-parse --short HEAD`
                     echo "Deploying ${COMMIT}..."
                     make test
                     make ecr-push SERVICE_VERSION=$COMMIT
@@ -130,3 +168,7 @@ Resources:
           Value: !Ref EnvLabel
         - Name: SOURCE_PATH
           Value: !Ref SourcePath
+        - Name: GIT_BRANCH
+          Value: ""
+        - Name: DEPLOY_SERVICE_VERSION
+          Value: ""

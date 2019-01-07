@@ -4,7 +4,7 @@ git clone -b dev-1.3.0 --single-branch https://github.com/graniticio/granitic $G
 echo "fetching granitic"
 go install github.com/graniticio/granitic
 echo "fetching service-core"
-git clone https://$GIT_USER:$GIT_OUTH_TOKEN@github.com/cloudfactory/service-core $GOPATH/src/github.com/cloudfactory/service-core
+git clone https://$GIT_USER:$GIT_OAUTH_TOKEN@github.com/cloudfactory/service-core $GOPATH/src/github.com/cloudfactory/service-core
 
 echo "fetching granitic yaml"
 go get github.com/graniticio/granitic-yaml
