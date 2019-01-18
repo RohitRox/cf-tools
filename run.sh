@@ -13,7 +13,7 @@ function cf-tools() {
         "config" )
           config-ok && cf-tools-config ;;
         "create-service" )
-          config-ok && create-service "$2" ;;
+          config-ok && create-service "$@" ;;
         "create-cluster" )
           config-ok && create-cluster "$2" ;;
         "load-env" )
@@ -62,11 +62,27 @@ function cf-tools-config() {
 }
 
 function create-service {
-  if [ ! -z "$1" ]
+  SERVICE_TYPE=go
+  for i in "$@"
+  do
+    case $i in
+        --nodejs)
+        SERVICE_TYPE=nodejs
+        ;;
+    esac
+  done
+  if [ ! -z "$2" ]
     then
-      if [ ! -d "./$1" ]
+      if [ ! -d "./$2" ]
         then
-          cp -R $CFTOOLS_HOME/cloudformation/service ./$1
+          if [ "$SERVICE_TYPE" == "nodejs" ]
+            then
+              echo "Creating node service ..."
+              cp -R $CFTOOLS_HOME/cloudformation/nodeapp ./$2
+            else
+              echo "Creating go service ..."
+              cp -R $CFTOOLS_HOME/cloudformation/service ./$2
+          fi
         else
           echo "Service with the same name exists in current path."
       fi
