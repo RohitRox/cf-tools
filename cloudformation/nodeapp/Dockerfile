@@ -21,6 +21,4 @@ COPY . .
 
 EXPOSE 8081
 
-RUN ln -s /dev/stdout log/access.log
-
 CMD [ "npm", "start" ]

@@ -6,7 +6,7 @@ module.exports.controller = (app) => {
     res.send('Homepage');
   });
 
-  app.get('/service_status', (req, res) => {
+  app.get('/service-status', (req, res) => {
     res.send('All Good');
   });
 };
