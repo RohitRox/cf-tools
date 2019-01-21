@@ -39,7 +39,8 @@ function cf-tools-usage() {
     cf-tools load-env
     cf-tools install-tools
     cf-tools create-cluster cluster-name
-    cf-tools create-service service-name
+    cf-tools create-service service-name # go service
+    cf-tools create-service service-name --nodejs # node based service
 EOM
 }
 
