@@ -1,7 +1,7 @@
 import * as React from "react";
 import { shallow } from "enzyme";
 
-import Hello from "../Hello";
+import Hello from ".";
 
 it("renders the heading", () => {
   const result = shallow(<Hello compiler="Typescript" framework="React" bundler="Webpack"/>);

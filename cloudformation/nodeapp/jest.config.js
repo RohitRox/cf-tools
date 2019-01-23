@@ -11,6 +11,6 @@ module.exports = {
     "^.+\\.(ts|tsx)$": "ts-jest"
   },
   testMatch: [
-    "**/__tests__/*.(ts|tsx|js)"
+    "**//*.spec.(ts|tsx|js)"
   ]
 }
