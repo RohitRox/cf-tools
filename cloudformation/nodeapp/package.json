@@ -8,7 +8,7 @@
     "url": ""
   },
   "scripts": {
-    "start": "npm run build && node server.js",
+    "start": "yarn build && node server.js",
     "build": "webpack",
     "test": "jest",
     "check-types": "tsc"
@@ -40,11 +40,14 @@
     "@types/react": "^16.7.18",
     "@types/react-dom": "^16.0.11",
     "babel-loader": "^8.0.5",
+    "css-loader": "^2.1.0",
     "enzyme": "^3.8.0",
     "enzyme-adapter-react-16": "^1.7.1",
     "html-webpack-plugin": "^3.2.0",
     "jest": "^23.6.0",
+    "node-sass": "^4.11.0",
     "source-map-loader": "^0.2.4",
+    "style-loader": "^0.23.1",
     "ts-jest": "^23.10.5",
     "tslint": "^5.12.1",
     "tslint-react": "^3.6.0",
