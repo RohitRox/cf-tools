@@ -4,47 +4,47 @@ const path = require('path'),
 
 module.exports = {
   entry: {
-      app: ['./src/app/App.tsx', 'webpack-hot-middleware/client'],
-      vendor: ['react', 'react-dom']
+    app: ['./src/app/App.tsx', 'webpack-hot-middleware/client'],
+    vendor: ['react', 'react-dom']
   },
   output: {
-      path: path.resolve(__dirname, 'dist'),
-      publicPath: '/',
-      filename: 'js/[name].bundle.js'
+    path: path.resolve(__dirname, 'dist'),
+    publicPath: '/',
+    filename: 'js/[name].bundle.js'
   },
   devtool: 'source-map',
   resolve: {
-      extensions: ['.js', '.jsx', '.json', '.ts', '.tsx']
+    extensions: ['.js', '.jsx', '.json', '.ts', '.tsx']
   },
   module: {
-      rules: [
+    rules: [
+      {
+        test: /\.(ts|tsx)$/,
+        loader: 'babel-loader'
+      },
+      { enforce: "pre", test: /\.js$/, loader: "source-map-loader" },
+      {
+        test: /\.scss$/,
+        use: [{
+          loader: "style-loader"
+        }, {
+          loader: "css-loader"
+        }, {
+          loader: "sass-loader"
+        }]
+      },
+      {
+        test: /\.(png|jpg|gif)$/,
+        use: [
           {
-              test: /\.(ts|tsx)$/,
-              loader: 'babel-loader'
+            loader: 'url-loader',
           },
-          { enforce: "pre", test: /\.js$/, loader: "source-map-loader" },
-          {
-              test: /\.scss$/,
-              use: [{
-                  loader: "style-loader"
-              }, {
-                  loader: "css-loader"
-              }, {
-                  loader: "sass-loader"
-              }]
-          },
-          {
-              test: /\.(png|jpg|gif)$/,
-              use: [
-                  {
-                      loader: 'url-loader',
-                  },
-              ],
-          },
-      ]
+        ],
+      },
+    ]
   },
   plugins: [
-      new HtmlWebpackPlugin({ template: path.resolve(__dirname, 'src', 'app', 'index.html') }),
-      new webpack.HotModuleReplacementPlugin()
+    new HtmlWebpackPlugin({ template: path.resolve(__dirname, 'src', 'app', 'index.html') }),
+    new webpack.HotModuleReplacementPlugin()
   ]
 }
