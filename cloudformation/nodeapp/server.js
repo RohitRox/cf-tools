@@ -19,11 +19,6 @@ fs.readdirSync("controllers").forEach(function (file) {
   }
 })
 
-app.get('/list_user', function (req, res) {
-  console.log("Got a GET request for /list_user");
-  res.send('Page Listing');
-})
-
 let compiler = webpack(webpackConfig);
 app.use(require('webpack-dev-middleware')(compiler, {
    noInfo: true, publicPath: webpackConfig.output.publicPath, stats:    { colors: true }
