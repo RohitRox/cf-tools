@@ -7,13 +7,5 @@ module.exports = {
     "tsx",
     "js"
   ],
-  transform: {
-    "^.+\\.(ts|tsx)$": "ts-jest"
-  },
-  "transformIgnorePatterns": [
-    // "/node_modules/(?!cloudfactory-ui-foundation).+\\.jsx$" Enable to use tsx from node modules
-  ],
-  testMatch: [
-    "**//*.spec.(ts|tsx|js)"
-  ]
+  "testRegex": "(/src/app/components/.*|(\\.|/))\\.spec.(ts|tsx|js)?$"
 }
