@@ -6,7 +6,7 @@ Parameters:
     Description: Name of the environment this cloudformation stack belongs to
     Type: String
 
-  EnvType:
+  EnvironmentType:
     Default: nonproduction
     Description: Type of the environment for this stack
     Type: String

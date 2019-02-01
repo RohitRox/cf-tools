@@ -14,7 +14,7 @@ Parameters:
     Type: String
     Description: Name of the service under particular subsystem
 
-  EnvType:
+  EnvironmentType:
     Default: nonproduction
     Description: Type of the environment for this stack
     Type: String
@@ -152,7 +152,7 @@ Resources:
             - Name: REGION
               Value: !Ref AWS::Region
             - Name: ENV_TYPE
-              Value: !Ref EnvType
+              Value: !Ref EnvironmentType
           PortMappings:
             - ContainerPort: !Ref AppPort
           LogConfiguration:
