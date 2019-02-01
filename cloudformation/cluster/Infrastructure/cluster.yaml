@@ -7,7 +7,7 @@ balancer is also created which routes traffic based on path
 to proper services.'
 
 Parameters:
-  EnvLabel:
+  EnvironmentName:
     Description: Name of the environment this cloudformation stack belongs to
     Type: String
 
@@ -45,14 +45,14 @@ Resources:
   ECSCluster:
     Type: AWS::ECS::Cluster
     Properties:
-      ClusterName: !Join [ '-', [ !Ref EnvLabel, !Ref SubSystem ] ]
+      ClusterName: !Join [ '-', [ !Ref EnvironmentName, !Ref SubSystem ] ]
 
   LoadBalancerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Access to the public facing load-balancer
       VpcId:
-        Fn::ImportValue: !Join [':', [!Ref 'EnvLabel', 'VPC']]
+        Fn::ImportValue: !Join [':', [!Ref 'EnvironmentName', 'VPC']]
       # FIXME: Only open the required ports
       SecurityGroupIngress:
         - CidrIp: 0.0.0.0/0
@@ -64,10 +64,10 @@ Resources:
       Scheme: !Ref LoadBalancerScheme
       Subnets: !If
       - LoadBalancerSchemeIsInternal
-      - - Fn::ImportValue: !Join [ ':', [ !Ref EnvLabel, 'SubnetAZ1Private' ]]
-        - Fn::ImportValue: !Join [ ':', [ !Ref EnvLabel, 'SubnetAZ2Private' ]]
-      - - Fn::ImportValue: !Join [ ':', [ !Ref EnvLabel, 'SubnetAZ1Public' ]]
-        - Fn::ImportValue: !Join [ ':', [ !Ref EnvLabel, 'SubnetAZ2Public' ]]
+      - - Fn::ImportValue: !Join [ ':', [ !Ref EnvironmentName, 'SubnetAZ1Private' ]]
+        - Fn::ImportValue: !Join [ ':', [ !Ref EnvironmentName, 'SubnetAZ2Private' ]]
+      - - Fn::ImportValue: !Join [ ':', [ !Ref EnvironmentName, 'SubnetAZ1Public' ]]
+        - Fn::ImportValue: !Join [ ':', [ !Ref EnvironmentName, 'SubnetAZ2Public' ]]
       SecurityGroups:
         - !Ref LoadBalancerSecurityGroup
       LoadBalancerAttributes:
@@ -91,7 +91,7 @@ Resources:
       Protocol: HTTP
       UnhealthyThresholdCount: 2
       VpcId:
-        Fn::ImportValue: !Join [':', [!Ref 'EnvLabel', 'VPC']]
+        Fn::ImportValue: !Join [':', [!Ref 'EnvironmentName', 'VPC']]
 
   LoadBalancerListenerHTTP:
     Type: AWS::ElasticLoadBalancingV2::Listener
@@ -176,41 +176,41 @@ Outputs:
     Description: The name of the ECS cluster
     Value: !Ref 'ECSCluster'
     Export:
-      Name: !Join [ ':', [ !Ref EnvLabel, !Ref SubSystem, 'ClusterName' ] ]
+      Name: !Join [ ':', [ !Ref EnvironmentName, !Ref SubSystem, 'ClusterName' ] ]
 
   ClusterUrl:
     Description: The url of the external load balancer
     Value: !Join ['', ['http://', !GetAtt 'LoadBalancer.DNSName']]
     Export:
-      Name: !Join [ ':', [ !Ref EnvLabel, !Ref SubSystem, 'ClusterUrl' ] ]
+      Name: !Join [ ':', [ !Ref EnvironmentName, !Ref SubSystem, 'ClusterUrl' ] ]
 
   ECSTaskExecutionRole:
     Description: The ARN of the ECS role
     Value: !GetAtt 'ECSTaskExecutionRole.Arn'
     Export:
-      Name: !Join [ ':', [ !Ref EnvLabel, !Ref SubSystem, 'ECSTaskExecutionRole' ] ]
+      Name: !Join [ ':', [ !Ref EnvironmentName, !Ref SubSystem, 'ECSTaskExecutionRole' ] ]
 
   AutoscalingRole:
     Description: The ARN of the ECS role
     Value: !GetAtt 'AutoscalingRole.Arn'
     Export:
-      Name: !Join [ ':', [ !Ref EnvLabel, !Ref SubSystem, 'AutoscalingRole' ] ]
+      Name: !Join [ ':', [ !Ref EnvironmentName, !Ref SubSystem, 'AutoscalingRole' ] ]
 
   HTTPListener:
     Description: The ARN of the load balancer's HTTP Listener
     Value: !Ref LoadBalancerListenerHTTP
     Export:
-      Name: !Join [ ':', [ !Ref EnvLabel, !Ref SubSystem, 'ListenerHTTP' ] ]
+      Name: !Join [ ':', [ !Ref EnvironmentName, !Ref SubSystem, 'ListenerHTTP' ] ]
 
   HTTPSListener:
     Description: The ARN of the load balancer's HTTPS Listener
     Condition: LoadBalancerHasCertificateArn
     Value: !Ref LoadBalancerListenerHTTPS
     Export:
-      Name: !Join [ ':', [ !Ref 'EnvLabel', !Ref SubSystem, 'ListenerHTTPS' ] ]
+      Name: !Join [ ':', [ !Ref 'EnvironmentName', !Ref SubSystem, 'ListenerHTTPS' ] ]
 
   LoadBalancerSecurityGroup:
     Description: The load balancer security group
     Value: !Ref LoadBalancerSecurityGroup
     Export:
-      Name: !Join [ ':', [ !Ref 'EnvLabel', !Ref SubSystem, 'LoadBalancerSecurityGroup' ] ]
+      Name: !Join [ ':', [ !Ref 'EnvironmentName', !Ref SubSystem, 'LoadBalancerSecurityGroup' ] ]

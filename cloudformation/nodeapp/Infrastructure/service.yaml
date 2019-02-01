@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Service Definition
 Parameters:
-  EnvLabel:
+  EnvironmentName:
     Type: String
     Description: A label for the environment that this cloudformation will be part of
 
@@ -71,10 +71,10 @@ Resources:
     Properties:
       GroupDescription: Access to the Fargate containers from load balancer
       VpcId:
-        Fn::ImportValue: !Join [':', [!Ref EnvLabel, 'VPC']]
+        Fn::ImportValue: !Join [':', [!Ref EnvironmentName, 'VPC']]
       SecurityGroupIngress:
         CidrIp:
-          Fn::ImportValue: !Join [':', [!Ref EnvLabel, 'CidrBlock']]
+          Fn::ImportValue: !Join [':', [!Ref EnvironmentName, 'CidrBlock']]
         IpProtocol: tcp
         FromPort: !Ref AppPort
         ToPort: !Ref AppPort
@@ -87,7 +87,7 @@ Resources:
       IpProtocol: '-1'
       SourceSecurityGroupId:
         Fn::ImportValue:
-          !Join [':', [!Ref EnvLabel, !Ref SubSystem, 'LoadBalancerSecurityGroup']]
+          !Join [':', [!Ref EnvironmentName, !Ref SubSystem, 'LoadBalancerSecurityGroup']]
 
   ContainerSecurityGroupIngressFromSelf:
     Type: AWS::EC2::SecurityGroupIngress
@@ -101,7 +101,7 @@ Resources:
   LogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Join ['/', ['/aws', 'ecs', !Ref EnvLabel, !Ref SubSystem, !Ref ServiceName]]
+      LogGroupName: !Join ['/', ['/aws', 'ecs', !Ref EnvironmentName, !Ref SubSystem, !Ref ServiceName]]
       RetentionInDays: 7
 
   # NOTE: ServiceRole is something specific to current service but most of what
@@ -132,7 +132,7 @@ Resources:
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
-      # Family: !Join ['-', [!Ref EnvLabel,!Ref SubSystem, !Ref ServiceName]]
+      # Family: !Join ['-', [!Ref EnvironmentName,!Ref SubSystem, !Ref ServiceName]]
       Family: !Ref ServiceName
       Cpu: !Ref ContainerCpu
       Memory: !Ref ContainerMemory
@@ -141,7 +141,7 @@ Resources:
         - FARGATE
       ExecutionRoleArn:
         Fn::ImportValue:
-          !Join [':', [!Ref EnvLabel, !Ref SubSystem, 'ECSTaskExecutionRole']]
+          !Join [':', [!Ref EnvironmentName, !Ref SubSystem, 'ECSTaskExecutionRole']]
       TaskRoleArn: !Ref ServiceRole
       ContainerDefinitions:
         - Name: !Ref ServiceName
@@ -175,7 +175,7 @@ Resources:
           TTL: 10
         NamespaceId:
           Fn::ImportValue:
-            !Join [':', [!Ref EnvLabel, 'ServiceDiscovery']]
+            !Join [':', [!Ref EnvironmentName, 'ServiceDiscovery']]
       HealthCheckCustomConfig:
         FailureThreshold: 1
 
@@ -188,10 +188,10 @@ Resources:
       - HTTPRule
       # - HTTPSRule
     Properties:
-      ServiceName: !Join ['-', [!Ref EnvLabel, !Ref SubSystem, !Ref ServiceName]]
+      ServiceName: !Join ['-', [!Ref EnvironmentName, !Ref SubSystem, !Ref ServiceName]]
       Cluster:
         Fn::ImportValue:
-          !Join [':', [!Ref EnvLabel, !Ref SubSystem, 'ClusterName']]
+          !Join [':', [!Ref EnvironmentName, !Ref SubSystem, 'ClusterName']]
       LaunchType: FARGATE
       DeploymentConfiguration:
         MaximumPercent: 200
@@ -202,8 +202,8 @@ Resources:
           AssignPublicIp: DISABLED
           SecurityGroups: [!Ref ContainerSecurityGroup]
           Subnets:
-            - Fn::ImportValue: !Join [ ':', [ !Ref EnvLabel, 'SubnetAZ1Private' ]]
-            - Fn::ImportValue: !Join [ ':', [ !Ref EnvLabel, 'SubnetAZ2Private' ]]
+            - Fn::ImportValue: !Join [ ':', [ !Ref EnvironmentName, 'SubnetAZ1Private' ]]
+            - Fn::ImportValue: !Join [ ':', [ !Ref EnvironmentName, 'SubnetAZ2Private' ]]
       TaskDefinition: !Ref TaskDefinition
       ServiceRegistries:
         - RegistryArn: !GetAtt ServiceDiscovery.Arn
@@ -227,7 +227,7 @@ Resources:
       HealthyThresholdCount: 2
       TargetType: ip
       # NOTE: TargetGroup name can not be more than 32 characters.
-      # Name: !Join ['-', [!Ref EnvLabel, !Ref SubSystem, !Ref ServiceName]]
+      # Name: !Join ['-', [!Ref EnvironmentName, !Ref SubSystem, !Ref ServiceName]]
       Port: !Ref AppPort
       Protocol: HTTP
       UnhealthyThresholdCount: 3
@@ -237,7 +237,7 @@ Resources:
         - Key: deregistration_delay.timeout_seconds
           Value: 45
       VpcId:
-        Fn::ImportValue: !Join [':', [!Ref EnvLabel, 'VPC']]
+        Fn::ImportValue: !Join [':', [!Ref EnvironmentName, 'VPC']]
 
   # Create rules to forward both HTTP and HTTPS traffic to the service's
   # target group. The service itself will handle redirecting HTTP traffic
@@ -253,7 +253,7 @@ Resources:
           Values: [!Ref UrlPattern]
       ListenerArn:
         Fn::ImportValue:
-          !Join [':', [!Ref EnvLabel, !Ref SubSystem, 'ListenerHTTP']]
+          !Join [':', [!Ref EnvironmentName, !Ref SubSystem, 'ListenerHTTP']]
       Priority: !Ref Priority
 
   # HTTPSRule:
@@ -267,7 +267,7 @@ Resources:
   #         Values: [!Ref Path]
   #     ListenerArn:
   #       Fn::ImportValue:
-  #         !Join [':', [!Ref EnvLabel, !Ref SubSystem, 'ListenerHTTPS']]
+  #         !Join [':', [!Ref EnvironmentName, !Ref SubSystem, 'ListenerHTTPS']]
   #     Priority: !Ref Priority
 
   # Enable autoscaling for this service
@@ -280,18 +280,18 @@ Resources:
         Fn::Join:
           - '/'
           - - service
-            - Fn::ImportValue: !Join [':', [!Ref EnvLabel, !Ref SubSystem, 'ClusterName']]
+            - Fn::ImportValue: !Join [':', [!Ref EnvironmentName, !Ref SubSystem, 'ClusterName']]
             - !GetAtt 'Service.Name'
       # ResourceId: !Sub
       # - 'service/${Cluster}/${Service}'
-      # - Cluster: {'Fn::ImportValue': !Sub '${EnvLabel}:${SubSystem}:ClusterName'}
+      # - Cluster: {'Fn::ImportValue': !Sub '${EnvironmentName}:${SubSystem}:ClusterName'}
       #   Service: !GetAtt 'Service.Name'
       #NOTE: these need to go parameterized
       MinCapacity: 2
       MaxCapacity: 10
       RoleARN:
         Fn::ImportValue:
-          !Join [':', [!Ref EnvLabel, !Ref SubSystem, 'AutoscalingRole']]
+          !Join [':', [!Ref EnvironmentName, !Ref SubSystem, 'AutoscalingRole']]
 
   # Create scaling policies for the service
   ScaleDownPolicy:
@@ -302,7 +302,7 @@ Resources:
         Fn::Join:
           - '/'
           - - scale
-            - !Ref EnvLabel
+            - !Ref EnvironmentName
             - !Ref SubSystem
             - !GetAtt 'Service.Name'
             - down
@@ -311,7 +311,7 @@ Resources:
         Fn::Join:
           - '/'
           - - service
-            - Fn::ImportValue: !Join [':', [!Ref EnvLabel, !Ref SubSystem, 'ClusterName']]
+            - Fn::ImportValue: !Join [':', [!Ref EnvironmentName, !Ref SubSystem, 'ClusterName']]
             - !GetAtt  'Service.Name'
       ScalableDimension: 'ecs:service:DesiredCount'
       ServiceNamespace: 'ecs'
@@ -331,7 +331,7 @@ Resources:
         Fn::Join:
           - '/'
           - - scale
-            - !Ref EnvLabel
+            - !Ref EnvironmentName
             - !Ref SubSystem
             - !GetAtt 'Service.Name'
             - up
@@ -340,7 +340,7 @@ Resources:
         Fn::Join:
           - '/'
           - - service
-            - Fn::ImportValue: !Join [':', [!Ref EnvLabel, !Ref SubSystem, 'ClusterName']]
+            - Fn::ImportValue: !Join [':', [!Ref EnvironmentName, !Ref SubSystem, 'ClusterName']]
             - !GetAtt  'Service.Name'
       ScalableDimension: 'ecs:service:DesiredCount'
       ServiceNamespace: 'ecs'
@@ -366,7 +366,7 @@ Resources:
         Fn::Join:
           - '-'
           - - low-cpu
-            - !Ref EnvLabel
+            - !Ref EnvironmentName
             - !Ref ServiceName
       AlarmDescription:
         Fn::Join:
@@ -374,7 +374,7 @@ Resources:
           - - "Low CPU utilization for service"
             - !Ref ServiceName
             - "in stack"
-            - !Ref EnvLabel
+            - !Ref EnvironmentName
       MetricName: CPUUtilization
       Namespace: AWS/ECS
       Dimensions:
@@ -384,7 +384,7 @@ Resources:
 
         - Name: ClusterName
           Value:
-            Fn::ImportValue: !Join [':', [!Ref EnvLabel, !Ref SubSystem, 'ClusterName']]
+            Fn::ImportValue: !Join [':', [!Ref EnvironmentName, !Ref SubSystem, 'ClusterName']]
       Statistic: Average
       Period: 60
       EvaluationPeriods: 1
@@ -396,11 +396,11 @@ Resources:
   HighCpuUsageAlarm:
     Type: AWS::CloudWatch::Alarm
     Properties:
-      # AlarmName: !Join ['-', ['high-cpu', !Ref EnvLabel, !Ref SubSystem, !GetAtt Service.Name]]
+      # AlarmName: !Join ['-', ['high-cpu', !Ref EnvironmentName, !Ref SubSystem, !GetAtt Service.Name]]
         # Fn::Join:
         #   - '-'
         #   - - high-cpu
-        #     - !Ref EnvLabel
+        #     - !Ref EnvironmentName
         #     - !Ref ServiceName
       AlarmDescription:
         Fn::Join:
@@ -408,7 +408,7 @@ Resources:
           - - "High CPU utilization for service"
             - !Ref ServiceName
             - "in stack"
-            - !Ref EnvLabel
+            - !Ref EnvironmentName
       MetricName: CPUUtilization
       Namespace: AWS/ECS
       Dimensions:
@@ -416,7 +416,7 @@ Resources:
           Value: !GetAtt 'Service.Name'
         - Name: ClusterName
           Value:
-            Fn::ImportValue: !Join [':', [!Ref EnvLabel, !Ref SubSystem, 'ClusterName']]
+            Fn::ImportValue: !Join [':', [!Ref EnvironmentName, !Ref SubSystem, 'ClusterName']]
       Statistic: Average
       Period: 60
       EvaluationPeriods: 1
