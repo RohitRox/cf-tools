@@ -71,10 +71,10 @@ update-release-stack:
 version:
 	echo $(SERVICE_VERSION)
 
-RESOURCE_ARGS=ParameterKey=EnvLabel,ParameterValue=$(ENV_LABEL) ParameterKey=EnvType,ParameterValue=$(ENV_TYPE) ParameterKey=SubSystem,ParameterValue=$(SUB_SYSTEM) ParameterKey=ServiceName,ParameterValue=$(SERVICE_NAME)
+RESOURCE_ARGS=ParameterKey=EnvironmentName,ParameterValue=$(ENV_LABEL) ParameterKey=EnvironmentType,ParameterValue=$(ENV_TYPE) ParameterKey=SubSystem,ParameterValue=$(SUB_SYSTEM) ParameterKey=ServiceName,ParameterValue=$(SERVICE_NAME)
 
-SERVICE_ARGS=ParameterKey=EnvLabel,ParameterValue=$(ENV_LABEL) ParameterKey=EnvType,ParameterValue=$(ENV_TYPE) ParameterKey=SubSystem,ParameterValue=$(SUB_SYSTEM) ParameterKey=ServiceName,ParameterValue=$(SERVICE_NAME) ParameterKey=ServiceVersion,ParameterValue=$(SERVICE_VERSION) ParameterKey=DockerRepoUrl,ParameterValue=$(ECR_ADDR) ParameterKey=AppPort,ParameterValue=$(APP_PORT) ParameterKey=UrlPattern,ParameterValue=$(URL_PATTERN) ParameterKey=Priority,ParameterValue=$(PRIORITY) ParameterKey=DesiredCount,ParameterValue=$(DESIRED_COUNT) ParameterKey=HealthCheckPath,ParameterValue=$(HEALTH_CHECK_PATH)
+SERVICE_ARGS=ParameterKey=EnvironmentName,ParameterValue=$(ENV_LABEL) ParameterKey=EnvironmentType,ParameterValue=$(ENV_TYPE) ParameterKey=SubSystem,ParameterValue=$(SUB_SYSTEM) ParameterKey=ServiceName,ParameterValue=$(SERVICE_NAME) ParameterKey=ServiceVersion,ParameterValue=$(SERVICE_VERSION) ParameterKey=DockerRepoUrl,ParameterValue=$(ECR_ADDR) ParameterKey=AppPort,ParameterValue=$(APP_PORT) ParameterKey=UrlPattern,ParameterValue=$(URL_PATTERN) ParameterKey=Priority,ParameterValue=$(PRIORITY) ParameterKey=DesiredCount,ParameterValue=$(DESIRED_COUNT) ParameterKey=HealthCheckPath,ParameterValue=$(HEALTH_CHECK_PATH)
 
-DEPLOYMENT_ARGS=ParameterKey=EnvLabel,ParameterValue=$(ENV_LABEL) ParameterKey=ServiceName,ParameterValue=$(SERVICE_NAME) ParameterKey=SubSystem,ParameterValue=$(SUB_SYSTEM) ParameterKey=GitRepo,ParameterValue=$(GIT_REPO) ParameterKey=SourcePath,ParameterValue=$(SOURCE_PATH)
+DEPLOYMENT_ARGS=ParameterKey=EnvironmentName,ParameterValue=$(ENV_LABEL) ParameterKey=ServiceName,ParameterValue=$(SERVICE_NAME) ParameterKey=SubSystem,ParameterValue=$(SUB_SYSTEM) ParameterKey=GitRepo,ParameterValue=$(GIT_REPO) ParameterKey=SourcePath,ParameterValue=$(SOURCE_PATH)
 
 RELEASE_ARGS=ParameterKey=ServiceName,ParameterValue=$(SERVICE_NAME) ParameterKey=SubSystem,ParameterValue=$(SUB_SYSTEM) ParameterKey=GitRepo,ParameterValue=$(GIT_REPO) ParameterKey=SourcePath,ParameterValue=$(SOURCE_PATH)

@@ -5,7 +5,7 @@ Description: CodeBuild project for deployments
 # To do it, navigate to the AWS CodeBuild console, create a project and select GitHub as source provider. The project does not need to be saved, it is only important to connect to GitHub. It only needs to be done once.
 
 Parameters:
-  EnvLabel:
+  EnvironmentName:
     Type: String
 
   GitRepo:
@@ -127,6 +127,6 @@ Resources:
         - Name: SERVICE_NAME
           Value: !Ref ServiceName
         - Name: ENV_LABEL
-          Value: !Ref EnvLabel
+          Value: !Ref EnvironmentName
         - Name: SOURCE_PATH
           Value: !Ref SourcePath

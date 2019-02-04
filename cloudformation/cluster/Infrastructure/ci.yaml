@@ -33,7 +33,8 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - logs:*
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
                 Resource:
                   - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/*
 
