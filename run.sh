@@ -28,9 +28,7 @@ function cf-tools() {
           __usage ;;
       esac
     else
-      echo "Command not recognized."
-      echo "Usage:"
-      __usage
+      __config
   fi
 }
 

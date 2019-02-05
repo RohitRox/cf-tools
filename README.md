@@ -2,10 +2,12 @@
 
 ```shell
   $ git clone git@github.com:RohitRox/cf-tools.git ~/.cf-tools
-  $ cp ~/cf-tools/.env.sample ~/cf-tools/.env # and modify .env accordingly
-  $ source ~/cf-tools/run.sh
-  $  cf-tools load-env
+  $ echo '[[ -s "$HOME/.cf-tools" ]] && source "$HOME/.cf-tools/run.sh"' >> .bashrc # or .zshrc if using zsh
+  $ . ~/.bashrc # . ~/.zshrc if using zsh
+  $ cp ~/.cf-tools/.env.sample ~/cf-tools/.env # and modify .env accordingly
+  $ cf-tools load-env
   $ cf-tools usage
+  $ cf-tools # displays current config
 ```
 
 # Setting cf-tools environment variables
