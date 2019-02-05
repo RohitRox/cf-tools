@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CFTOOLS_HOME=~/cf-tools
+CFTOOLS_HOME=~/.cf-tools
 
 function cf-tools() {
   if [ ! -z "$1" ]
