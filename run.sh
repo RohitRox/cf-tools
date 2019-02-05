@@ -7,36 +7,39 @@ function cf-tools() {
     then
       case "$1" in
         "help" )
-          cf-tools-help ;;
+          __help ;;
         "install-tools" )
-          cf-tools-install ;;
+          __install ;;
         "config" )
-          config-ok && cf-tools-config ;;
+          __ok && __config ;;
         "create-service" )
-          config-ok && create-service "$@" ;;
+          __ok && __create-service "$@" ;;
         "create-cluster" )
-          config-ok && create-cluster "$2" ;;
-        "load-env" )
+          __ok && __create-cluster "$2" ;;
+        "load-config" )
           export $(cat $CFTOOLS_HOME/.env | xargs) ;;
+        "setenv" )
+          export ENV_LABEL=$2 ;;
         "usage" )
-          cf-tools-usage ;;
+          __usage ;;
         * )
           echo "Command not recognized."
           echo "Usage:"
-          cf-tools-usage ;;
+          __usage ;;
       esac
     else
       echo "Command not recognized."
       echo "Usage:"
-      cf-tools-usage
+      __usage
   fi
 }
 
-function cf-tools-usage() {
+function __usage() {
   cat <<- EOM
     cf-tools help
     cf-tools config
-    cf-tools load-env
+    cf-tools load-config
+    cf-tools setenv
     cf-tools install-tools
     cf-tools create-cluster cluster-name
     cf-tools create-service service-name # go service
@@ -44,25 +47,25 @@ function cf-tools-usage() {
 EOM
 }
 
-function cf-tools-help() {
+function  __help() {
   cat $CFTOOLS_HOME/README.md
 }
 
-function cf-tools-install() {
+function __install() {
   ([ `which aws` ] && echo "aws already installed") || (echo "installing aws" && pip install awscli)
   ([ `which ok` ] && echo "jq already installed") || ( echo "installing jq" && ([ `which brew` ] && brew install jq || [ `which apt-get` ] && apt-get install jq || [ `which yum` ] && yum install jq || [ `which choco` ] && choco install jq))
 }
 
-function cf-tools-config() {
+function __config() {
   echo "Current cf-tools environment:"
-  echoInfo "AWS_PROFILE: ${AWS_PROFILE}"
-  echoInfo "AWS_REGION: ${AWS_REGION}"
-  echoInfo "GIT_USER: ${GIT_USER}"
-  [[ -z "$GIT_OAUTH_TOKEN" ]] && echoInfo "GIT_OAUTH_TOKEN: " || echoInfo "GIT_OAUTH_TOKEN: xxxxxxxx"
-  echoInfo "ENV_LABEL: ${ENV_LABEL}"
+  __echoInfo "AWS_PROFILE: ${AWS_PROFILE}"
+  __echoInfo "AWS_REGION: ${AWS_REGION}"
+  __echoInfo "GIT_USER: ${GIT_USER}"
+  [[ -z "$GIT_OAUTH_TOKEN" ]] && __echoInfo "GIT_OAUTH_TOKEN: " || __echoInfo "GIT_OAUTH_TOKEN: xxxxxxxx"
+  __echoInfo "ENV_LABEL: ${ENV_LABEL}"
 }
 
-function create-service {
+function __create-service {
   SERVICE_TYPE=go
   for i in "$@"
   do
@@ -92,7 +95,7 @@ function create-service {
   fi
 }
 
-function create-cluster() {
+function __create-cluster() {
   if [ ! -z "$1" ]
     then
       if [ ! -d "./$1" ]
@@ -108,11 +111,11 @@ function create-cluster() {
   fi
 }
 
-function config-ok() {
+function __ok() {
   if [[ -z "$AWS_PROFILE" || -z "$AWS_REGION"] || -z "$ENV_LABEL" ]]
     then
       echo "One of the required env variables are not set."
-      cf-tools-config
+      __config
       return 1
     else
       return 0
@@ -130,7 +133,7 @@ White='\033[0;37m'        # White
 
 NC='\033[0m'
 
-function echoInfo() {
+function __echoInfo() {
   printf "${Cyan}$1${NC}\n"
 }
 
