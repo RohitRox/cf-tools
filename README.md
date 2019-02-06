@@ -1,11 +1,13 @@
 # Using this tool
 
 ```shell
-  $ git clone git@github.com:RohitRox/cf-tools.git ~/cf-tools
-  $ cp ~/cf-tools/.env.sample ~/cf-tools/.env # and modify .env accordingly
-  $ source ~/cf-tools/run.sh
-  $  cf-tools load-env
+  $ git clone git@github.com:RohitRox/cf-tools.git ~/.cf-tools
+  $ echo '[[ -s "$HOME/.cf-tools" ]] && source "$HOME/.cf-tools/run.sh"' >> .bashrc # or .zshrc if using zsh
+  $ . ~/.bashrc # . ~/.zshrc if using zsh
+  $ cp ~/.cf-tools/.env.sample ~/cf-tools/.env # and modify .env accordingly
+  $ cf-tools load-env
   $ cf-tools usage
+  $ cf-tools # displays current config
 ```
 
 # Setting cf-tools environment variables
@@ -13,7 +15,7 @@
 ```shell
   $ cf-tools config # show current environment settings
   $ cf-tools load-env # load env from /path/to/cf-tools/.env
-  $ export AWS_PROFILE=swm # just set the environment directly
+  $ cf-tools setenv alpha # sets the ENV_LABEL
 ```
 
 # Github token

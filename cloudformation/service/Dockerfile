@@ -1,7 +1,7 @@
 FROM amazonlinux:2
 
 RUN yum install git -y
-RUN amazon-linux-extras install golang1.9
+RUN amazon-linux-extras install golang1.11
 
 ENV GOPATH=/go
 ENV GRANITIC_HOME=$GOPATH/src/github.com/graniticio/granitic
