@@ -34,7 +34,7 @@ function cf-tools() {
 
 function __cf-tools-complete() {
   local cur=${COMP_WORDS[COMP_CWORD]}
-  COMPREPLY=( $(compgen -W "help config load-config setenv install-tools create-cluster create-service" -- $cur) )
+  COMPREPLY=( $(compgen -W "help config load-config setenvlabel install-tools create-cluster create-service" -- $cur) )
 }
 
 complete -F __cf-tools-complete cf-tools
