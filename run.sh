@@ -18,7 +18,7 @@ function cf-tools() {
           __ok && __create-cluster "$2" ;;
         "load-config" )
           export $(cat $CFTOOLS_HOME/.env | xargs) ;;
-        "setenv" )
+        "setenvlabel" )
           export ENV_LABEL=$2 ;;
         "usage" )
           __usage ;;
@@ -44,7 +44,7 @@ function __usage() {
     cf-tools help
     cf-tools config
     cf-tools load-config
-    cf-tools setenv
+    cf-tools setenvlabel
     cf-tools install-tools
     cf-tools create-cluster cluster-name
     cf-tools create-service service-name # go service

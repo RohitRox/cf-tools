@@ -15,7 +15,7 @@
 ```shell
   $ cf-tools config # show current environment settings
   $ cf-tools load-env # load env from /path/to/cf-tools/.env
-  $ cf-tools setenv alpha # sets the ENV_LABEL
+  $ cf-tools setenvlabel alpha # sets the ENV_LABEL
 ```
 
 # Github token
